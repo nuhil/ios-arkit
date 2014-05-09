@@ -3,6 +3,10 @@ iOS Augmented Reality Engine
 
 I'm glad to share this engine that I've been developing from time to time with all of you. It's based on the [iPhone ARKit](https://github.com/zac/iphonearkit).
 
+##Updates by Me:
+
+ * Overlapped multiple annotations (that are mathematically closer to each other) will now be shown with a little Y axis replacements relative to each other, maintaining the direction.
+
 ##Core Features:
 
  * Fully compatible with all versions of iOS from 5.0 onwards.
