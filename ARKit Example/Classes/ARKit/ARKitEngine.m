@@ -455,9 +455,39 @@ NSComparisonResult LocationSortClosestFirst(ARGeoCoordinate *s1, ARGeoCoordinate
     }
 }
 
+- (CGPoint)correctedPointForCoordinate:(ARGeoCoordinate *)coordinate point:(CGPoint)point {
+    CLLocation *testLocation = [coordinate geoLocation];
+    
+    //Getting all indexes of coordinates that are near the coordiante
+    NSIndexSet *set = [ar_coordinates indexesOfObjectsPassingTest:^BOOL(ARGeoCoordinate *coord, NSUInteger index, BOOL *stop) {
+        //Thats the threshold for the latitude or how near they can be to the passed coordinte.
+        CGFloat threshold = 0.5f;
+        CLLocation *location1 = [coord geoLocation];
+        
+        return (fabs([location1 coordinate].latitude - [testLocation coordinate].latitude) < threshold);
+    }];
+    
+    //Getting all coordinates that are near each other
+    NSArray *objects = [ar_coordinates objectsAtIndexes:set];
+    CGFloat offset = 20;
+    
+    int i = 1;
+    for(ARGeoCoordinate *coord in objects) {
+        if([coord isEqualToCoordinate:coordinate]) {
+            //Correct the y value for the current cordinate
+            point.y = point.y + i * offset;
+            return point;
+        }
+        ++i;
+    }
+    
+    return point;
+}
+
 - (void) frontPositioning:(ARObjectView *)theView atCoordinate:(ARGeoCoordinate *)coord {
 	if (theView.displayed && [self viewportContainsCoordinate:coord]) {
 		CGPoint loc = [self pointInView:ar_overlayView forCoordinate:coord];
+        loc = [self correctedPointForCoordinate:coord point:loc];
         
 		CGFloat scaleFactor = 1.0;
 		if (scaleViewsBasedOnDistance) {
